@@ -78,3 +78,52 @@ public:
 
     }
 };
+
+/*
+    Another better solution using the swap
+*/
+class Solution {
+public:
+
+    /*
+        In the following solution we are not carry an additional freq vector and an addition array 
+        whatwe are doing is we are using an index variab for the same and we are modifying the original array and then
+        undoing those change to get the array back
+
+    
+    
+    */
+    void solve(int index,vector<vector<int>> &ans,vector<int>& nums)
+    {
+        if(index==nums.size()){
+            ans.push_back(nums);
+            return;
+        }
+        for(int i=index;i<nums.size();i++){
+            
+            swap(nums[index],nums[i]);
+            solve(index+1,ans,nums);
+            swap(nums[index],nums[i]);
+
+        }
+
+    }
+
+
+
+
+
+
+    vector<vector<int>> permute(vector<int>& nums) {
+       
+        vector<vector<int>> ans;
+        
+
+        solve(0,ans,nums);
+
+        return ans;
+
+
+
+    }
+};
