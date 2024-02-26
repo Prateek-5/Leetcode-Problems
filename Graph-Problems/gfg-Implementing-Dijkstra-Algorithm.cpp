@@ -119,3 +119,103 @@ class Solution
         
     }
 };
+class Solution
+{
+	public:
+	//Function to find the shortest distance of all the vertices
+    //from the source vertex S.
+    
+    /*
+        Implementation of dijkstra algo using sets rather than minHeap
+        By default the entries in the set are inserted in ascending order
+        we will use this to our advantage
+        
+    
+    
+    */
+    
+    
+    
+    vector <int> dijkstra(int V, vector<vector<int>> adj[], int S)
+    {
+        // Code here
+        
+        set<pair<int,int>> st;
+        vector<int> dist(V,INT_MAX);
+        
+        dist[S]=0;
+        
+        /*
+            Formate for insertion in set 
+                {dist,vertex}
+        */
+        st.insert({0,S});
+        
+        while(!st.empty())
+        {   
+            /*
+                Extracting the point and de-referencing it to access the value strored
+            */
+            
+            auto it= *st.begin();
+            /*
+                node-->the current node so that we can traverse the adj vertex using the following value
+                weight-->the current weight of the current node so that if we calculate the distance of any vertex via this
+                node we can use this value to add to the total distance
+                
+            */
+            
+            int node=it.second;
+            int weight=it.first;
+            
+            st.erase(it);
+            
+            for(auto i:adj[node])
+            {
+                int v=i[0];
+                int w=i[1];
+                /*
+                
+                    v->is the adj nodes to the current node
+                    w-> this is the weight of the edge that connects node and v
+                
+                */
+                if(dist[v] > weight + w )
+                {
+                    /*
+                        In minHeap we use to insert all the {distance,node} pair to the minHeap and later process it
+                        although those entries did'nt affected the dist vector bu it add an extra overhead soto avoid that
+                        
+                        Below is a situtaion where we have a 
+                            {weight+w,v} < {dist[v],v}
+                            Ex:-  {4,2} < {6,2}
+                            
+                            We have got an entry where the dist to 2 is 4 but in the set we have an addition entry where the 
+                            distance until 2 us 6 which is of not use for us in the future computation also so we remove the 
+                            following entry from the set so that we do not have to perform addition computation in the future
+                    
+                    */
+                    
+                    if(dist[v]!=INT_MAX)
+                    {
+                        st.erase({dist[v],v});
+                    }
+                    
+                    
+                    dist[v]=weight+w;
+                    st.insert({weight+w,v});
+                }
+                
+                
+                
+            }
+            
+            
+        }
+        return dist;
+        
+        
+        
+        
+    }
+};
