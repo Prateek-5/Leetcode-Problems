@@ -127,3 +127,100 @@ public:
         return n-count;        
     }
 };
+class Solution {
+public:
+
+    /*
+        Intution / Basic Algorithm
+
+        -Basically as discussed we need to make cluster of the point with similar row or colum (x or y co-ordinates)
+        -Basic implementation of union and find fro nodes
+        -2 Nested loop that create a union of point based on the fact of if the points share similar x-coordinates or y-coordinates
+        -Once we have created the union of all the point we need to check how many union have been formed
+        -Once we have the number of cluster we can substract the total point from the number of cluster
+        -The differece of the number of stones and number of clusters is the number of points that can be removed
+
+    
+    
+    
+    */
+
+    int findNode(int a,vector<int>& parent)
+    {
+        if(a==parent[a])
+        {
+            return a;
+        }
+
+        return parent[a]=findNode(parent[a],parent);
+    }
+
+    void unionNode(int a,int b,vector<int>& parent,vector<int>& rank)
+    {
+
+        int x=parent[a];
+        int y=parent[b];
+
+        if(x==y)    return;
+
+        if(rank[x] > rank[y])
+        {
+            parent[y]=x;
+        }
+        else if(rank[y] > rank[x])
+        {
+            parent[x]=y;
+        }
+        else{
+            parent[y]=x;
+            rank[x]++;
+        }
+
+
+    }
+
+
+
+    int removeStones(vector<vector<int>>& stones) {
+        int n=stones.size();
+        vector<int> parent(n);
+        vector<int> rank(n,0);
+
+        for(int i=0;i<n;i++)
+        {
+            parent[i]=i;
+        }
+
+        for(int i=0;i<n;i++)
+        {
+            int x=stones[i][0];
+            int y=stones[i][1];
+
+            for(int j=i+1;j<n;j++)
+            {
+                int x1=stones[j][0];
+                int y1=stones[j][1];
+
+                if((x==x1 || y==y1) && findNode(i,parent)!=findNode(j,parent))
+                {
+                    unionNode(i,j,parent,rank);
+                }
+            }
+
+        }
+        map<int,int> mp;
+        for(int i:parent)
+        {
+            mp[findNode(i,parent)]++;
+        }
+        
+        //cout<<mp.size();
+        int numberClusters=mp.size();
+
+        return n-numberClusters;
+
+
+
+
+    }
+};
