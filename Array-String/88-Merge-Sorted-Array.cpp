@@ -87,3 +87,52 @@ public:
         }
     }
 };
+class Solution {
+public:
+    /*
+        Intution / Basic Idea
+
+        -Since in the question its's given that the input array are in non-decressing order
+        -And we are provided up with the size of both the array and the total size
+        -We start filling the aray from the back side in decressing order 
+            -The larger element gets inserted and we decrement that counter
+            -If any of the array gets exusted first we write a seperate logic to insert all the 
+                elements fromt he other array
+    
+    
+    */
+
+
+
+    void merge(vector<int>& nums1, int m, vector<int>& nums2, int n) {
+        int size=m+n-1;
+        int i=m-1;
+        int j=n-1;
+        while(i>=0 && j>=0)
+        {
+            if(nums1[i] >= nums2[j])
+            {
+                nums1[size]=nums1[i];
+                i--;
+            }
+            else{
+                nums1[size]=nums2[j];
+                j--;
+            }
+            size--;
+        }
+        while(i>=0)
+        {
+            nums1[size]=nums1[i];
+            size--;
+            i--;
+        }
+        while(j>=0)
+        {
+            nums1[size]=nums2[j];
+            size--;
+            j--;
+        }
+
+    }
+};
