@@ -27,9 +27,8 @@ Constraints:
 
 */
 
-//Solution
-/*
-    class Solution {
+
+class Solution {
 public:
 
     /*
@@ -71,10 +70,21 @@ public:
         int n=nums.size();
         if(n==1)    return nums[0];
 
-        // return solve(nums,n);
+        //return solve(nums,n-1);
         vector<int> dp(n);
         dp[0]=nums[0];
         dp[1]=max(nums[0],nums[1]);
+        /*
+            [2,1]
+            Observe the following case very casefully this holds the reason why we are taking max(num[0],num[1])
+            If we would have taken dp[1] as num[1] then the max abount until we roob n houses whould be 1
+                which means the theaf does not rob house 1 with 2 cash
+                but robbs the house  2 with 1 cash this is not a optimal approch
+            Hence for dp[1] we take max(nums[0],nums[1])
+
+        
+        */
+
         for(int i=2;i<n;i++){
             dp[i]=max(dp[i-1],dp[i-2]+nums[i]);
         }
@@ -84,7 +94,3 @@ public:
         
     }
 };
-
-
-
-*/
