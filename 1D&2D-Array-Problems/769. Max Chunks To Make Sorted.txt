@@ -1,0 +1,156 @@
+/*
+You are given an integer array arr of length n that represents a permutation of the integers in the range [0, n - 1].
+
+We split arr into some number of chunks (i.e., partitions), and individually sort each chunk. After concatenating them, the result should equal the sorted array.
+
+Return the largest number of chunks we can make to sort the array.
+
+ 
+
+Example 1:
+
+Input: arr = [4,3,2,1,0]
+Output: 1
+Explanation:
+Splitting into two or more chunks will not return the required result.
+For example, splitting into [4, 3], [2, 1, 0] will result in [3, 4, 0, 1, 2], which isn't sorted.
+Example 2:
+
+Input: arr = [1,0,2,3,4]
+Output: 4
+Explanation:
+We can split into two chunks, such as [1, 0], [2, 3, 4].
+However, splitting into [1, 0], [2], [3], [4] is the highest number of chunks possible.
+ 
+
+Constraints:
+
+n == arr.length
+1 <= n <= 10
+0 <= arr[i] < n
+All the elements of arr are unique.
+*/
+class Solution {
+public:
+    int maxChunksToSorted(vector<int>& arr) {
+        int max_chunks=0;
+        int max_element=INT_MIN;
+        for(int i=0;i<arr.size();i++){
+            max_element=max(arr[i],max_element);
+            if(max_element==i){
+                max_chunks++;
+            }
+        }
+        return max_chunks;
+    }
+};
+
+Perfect — this is **the key insight** in the problem, and understanding *why*
+`max_so_far == i` means we can safely “cut” a chunk is crucial.
+
+Let’s go step by step carefully with **intuition + concrete examples** 👇
+
+---
+
+## 🧩 Core Idea Recap
+
+We want to split the array into parts (chunks) such that **each chunk**, when sorted individually, gives us the same result as sorting the whole array.
+
+To do that, the left chunk (from 0 to i) must contain **exactly the same set of numbers** that should be in those positions in the sorted array.
+
+Since the array is a **permutation of [0, 1, 2, ..., n-1]**,
+that means:
+
+* The **first chunk** should contain all numbers from **0** up to some number **i**,
+* and **no numbers larger than i** (otherwise, sorting that chunk wouldn’t line up properly).
+
+---
+
+## 🧠 When Can We Cut?
+
+We can **safely cut** at index `i` when:
+
+> The largest number we’ve seen so far (`max_so_far`) is equal to `i`.
+
+That means:
+
+* Every number from `0` to `i` is somewhere in the first `i+1` positions.
+* There’s no missing smaller number that’s still in the right side of the array.
+
+So, sorting everything up to `i` will give us `[0, 1, 2, ..., i]` — perfectly sorted on its own.
+
+---
+
+## 🔍 Example 1: arr = [1, 0, 2, 3, 4]
+
+Let’s track step by step:
+
+| Index (i) | arr[i] | max_so_far | Condition (max_so_far == i?) | Can cut here? | Reason                         |
+| --------- | ------ | ---------- | ---------------------------- | ------------- | ------------------------------ |
+| 0         | 1      | 1          | ❌ (1 ≠ 0)                    | No            | We’ve seen 1 but not 0 yet     |
+| 1         | 0      | 1          | ✅ (1 == 1)                   | Yes           | We’ve seen 0 and 1 — all ≤ 1   |
+| 2         | 2      | 2          | ✅ (2 == 2)                   | Yes           | We’ve seen [0,1,2] — perfect   |
+| 3         | 3      | 3          | ✅ (3 == 3)                   | Yes           | We’ve seen [0,1,2,3] — perfect |
+| 4         | 4      | 4          | ✅ (4 == 4)                   | Yes           | Whole array now sorted         |
+
+### ✅ Chunks:
+
+* [1, 0] → sort → [0, 1]
+* [2]
+* [3]
+* [4]
+
+Concatenate: `[0,1,2,3,4]` → sorted ✅
+Hence **4 chunks**.
+
+---
+
+## 🔍 Example 2: arr = [4, 3, 2, 1, 0]
+
+| Index (i) | arr[i] | max_so_far | Condition  | Can cut here? | Reason                          |
+| --------- | ------ | ---------- | ---------- | ------------- | ------------------------------- |
+| 0         | 4      | 4          | ❌ (4 ≠ 0)  | No            | Missing 0,1,2,3                 |
+| 1         | 3      | 4          | ❌ (4 ≠ 1)  | No            | Missing 0,1,2                   |
+| 2         | 2      | 4          | ❌ (4 ≠ 2)  | No            | Missing 0,1                     |
+| 3         | 1      | 4          | ❌ (4 ≠ 3)  | No            | Missing 0                       |
+| 4         | 0      | 4          | ✅ (4 == 4) | Yes           | Now we’ve seen everything [0–4] |
+
+✅ Only one chunk possible → `[4,3,2,1,0]`.
+
+---
+
+## 🔍 Example 3: arr = [2, 0, 1, 3, 4]
+
+| Index | arr[i] | max_so_far | Condition  | Can cut here? | Reason                     |
+| ----- | ------ | ---------- | ---------- | ------------- | -------------------------- |
+| 0     | 2      | 2          | ❌          | No            | Missing 0,1                |
+| 1     | 0      | 2          | ❌          | No            | Missing 1                  |
+| 2     | 1      | 2          | ✅ (2 == 2) | Yes           | We’ve seen 0,1,2 — all ≤ 2 |
+| 3     | 3      | 3          | ✅          | Yes           | Perfectly aligned          |
+| 4     | 4      | 4          | ✅          | Yes           | Fully sorted               |
+
+✅ Chunks: `[2,0,1]`, `[3]`, `[4]` → total **3 chunks**.
+
+---
+
+## 🔎 Visual Intuition
+
+Think of `max_so_far` as a **boundary tracker**:
+
+* It tells you how far the current “group” of numbers should reach.
+* Once the max number seen so far equals the current index, it means:
+
+  * All smaller numbers are already to the left.
+  * You’ve just completed a "block" that can be sorted independently.
+
+---
+
+## 🧾 Quick Summary
+
+| Concept           | Meaning                                                                                    |
+| ----------------- | ------------------------------------------------------------------------------------------ |
+| `max_so_far`      | The largest number seen so far as we move left → right                                     |
+| Condition for cut | `max_so_far == current index (i)`                                                          |
+| Why it works      | It guarantees that the subarray `[0...i]` contains all numbers `0...i` (no missing values) |
+| Result            | Sorting this chunk gives `[0...i]`, which aligns perfectly with sorted order               |
+
