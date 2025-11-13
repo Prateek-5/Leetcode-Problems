@@ -1,0 +1,145 @@
+/*
+You are given a 0-indexed 1-dimensional (1D) integer array original, and two integers, m and n. You are tasked with creating a 2-dimensional (2D) array with  m rows and n columns using all the elements from original.
+
+The elements from indices 0 to n - 1 (inclusive) of original should form the first row of the constructed 2D array, the elements from indices n to 2 * n - 1 (inclusive) should form the second row of the constructed 2D array, and so on.
+
+Return an m x n 2D array constructed according to the above procedure, or an empty 2D array if it is impossible.
+
+ 
+
+Example 1:
+
+
+Input: original = [1,2,3,4], m = 2, n = 2
+Output: [[1,2],[3,4]]
+Explanation: The constructed 2D array should contain 2 rows and 2 columns.
+The first group of n=2 elements in original, [1,2], becomes the first row in the constructed 2D array.
+The second group of n=2 elements in original, [3,4], becomes the second row in the constructed 2D array.
+Example 2:
+
+Input: original = [1,2,3], m = 1, n = 3
+Output: [[1,2,3]]
+Explanation: The constructed 2D array should contain 1 row and 3 columns.
+Put all three elements in original into the first row of the constructed 2D array.
+Example 3:
+
+Input: original = [1,2], m = 1, n = 1
+Output: []
+Explanation: There are 2 elements in original.
+It is impossible to fit 2 elements in a 1x1 2D array, so return an empty 2D array.
+
+
+
+*/
+
+class Solution {
+public:
+    vector<vector<int>> construct2DArray(vector<int>& original, int m, int n) {
+        if(original.size() != m*n)    return {};
+        vector<vector<int>> result(m,vector<int> (n));   
+
+        for(int i=0; i < original.size() ; i++ ){
+            int row=i/n;
+            int col=i%n;
+            result[row][col]=original[i];
+        }
+
+        return result;
+
+
+
+        
+    }
+};
+
+🧠 Step-by-Step Explanation
+Step 1: Check if conversion is possible
+if(original.size() != m*n) return {};
+
+
+The number of elements in the 1D array must exactly match the total number of elements in the m × n matrix.
+
+If not, we immediately return an empty 2D vector.
+
+✅ Reason:
+You can’t reshape a vector into a matrix if the total number of elements doesn’t match.
+
+Step 2: Initialize a 2D vector
+vector<vector<int>> result(m, vector<int>(n));
+
+
+This creates a 2D vector result with:
+
+m rows
+
+n columns
+
+Initially, all elements are default-initialized to 0.
+
+✅ Example:
+If m = 2 and n = 3, this line creates:
+
+result = [
+  [0, 0, 0],
+  [0, 0, 0]
+]
+
+Step 3: Fill the 2D matrix
+for(int i = 0; i < original.size(); i++) {
+    int row = i / n;
+    int col = i % n;
+    result[row][col] = original[i];
+}
+
+
+Here’s the key logic.
+
+We iterate over each element in the 1D vector original, and map its index i to a (row, column) in the 2D matrix.
+
+row = i / n → Integer division gives the row index.
+
+col = i % n → Modulus gives the column index within that row.
+
+Then, we assign:
+
+result[row][col] = original[i];
+
+
+✅ Example:
+If original = [1,2,3,4,5,6] and m=2, n=3:
+
+i	original[i]	row = i/n	col = i%n	result[row][col]
+0	1	0	0	result[0][0] = 1
+1	2	0	1	result[0][1] = 2
+2	3	0	2	result[0][2] = 3
+3	4	1	0	result[1][0] = 4
+4	5	1	1	result[1][1] = 5
+5	6	1	2	result[1][2] = 6
+
+Final result:
+
+[
+  [1, 2, 3],
+  [4, 5, 6]
+]
+
+✅ Step 4: Return the result
+return result;
+
+
+The fully constructed 2D matrix is returned.
+
+⚙️ Time and Space Complexity
+
+Time Complexity: O(m * n)
+(We visit each element once)
+
+Space Complexity: O(m * n)
+(We create a new 2D vector of size m × n)
+
+🧾 Summary of Approach
+Step	Action	Purpose
+1	Check if original.size() == m * n	Ensure reshape is possible
+2	Initialize 2D vector result	Create space for the new matrix
+3	Map each element from 1D → 2D	Use row = i/n, col = i%n
+4	Return result	Return the constructed matrix
